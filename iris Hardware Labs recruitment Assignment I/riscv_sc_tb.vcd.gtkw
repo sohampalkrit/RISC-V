@@ -1,0 +1,136 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Sat Mar 22 18:57:01 2025
+[*]
+[dumpfile] "C:\Users\hp\OneDrive\Documents\2nd year stuff\iris_labs\iris Hardware Labs recruitment Assignment I\riscv_sc_tb.vcd"
+[dumpfile_mtime] "Sat Mar 22 18:33:25 2025"
+[dumpfile_size] 11143
+[savefile] "C:\Users\hp\OneDrive\Documents\2nd year stuff\iris_labs\iris Hardware Labs recruitment Assignment I\riscv_sc_tb.vcd.gtkw"
+[timestart] 0
+[size] 1536 793
+[pos] -35 -35
+*-5.000000 17 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_riscv_sc.
+[treeopen] tb_riscv_sc.riscv_DUT.
+[sst_width] 211
+[signals_width] 276
+[sst_expanded] 1
+[sst_vpaned_height] 222
+@28
+tb_riscv_sc.riscv_DUT.m_PC.clk
+tb_riscv_sc.riscv_DUT.m_PC.rst
+@800200
+-PC
+@200
+-
+@22
+tb_riscv_sc.riscv_DUT.m_PC.pc_o[31:0]
+tb_riscv_sc.riscv_DUT.m_PC.pc_i[31:0]
+@200
+-
+@1000200
+-PC
+@800200
+-InstructionMemory
+@200
+-
+@22
+tb_riscv_sc.riscv_DUT.m_InstMem.inst[31:0]
+tb_riscv_sc.riscv_DUT.m_InstMem.readAddr[31:0]
+@1000200
+-InstructionMemory
+@800200
+-adder1
+@200
+-
+@1000200
+-adder1
+@22
+tb_riscv_sc.riscv_DUT.m_Adder_1.a[31:0]
+tb_riscv_sc.riscv_DUT.m_Adder_1.b[31:0]
+tb_riscv_sc.riscv_DUT.m_Adder_1.sum[31:0]
+@800200
+-Immgen
+@200
+-
+@1000200
+-Immgen
+@22
+tb_riscv_sc.riscv_DUT.m_ImmGen.imm[31:0]
+tb_riscv_sc.riscv_DUT.m_ImmGen.inst[31:0]
+@c00022
+tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+@28
+(0)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+(1)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+(2)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+(3)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+(4)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+(5)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+(6)tb_riscv_sc.riscv_DUT.m_ImmGen.opcode[6:0]
+@1401200
+-group_end
+@c00200
+-regfile
+@22
+tb_riscv_sc.riscv_DUT.m_Register.readData1[31:0]
+tb_riscv_sc.riscv_DUT.m_Register.readData2[31:0]
+tb_riscv_sc.riscv_DUT.m_Register.readReg1[4:0]
+@800022
+tb_riscv_sc.riscv_DUT.m_Register.readReg2[4:0]
+@1001200
+-group_end
+@28
+tb_riscv_sc.riscv_DUT.m_Register.regWrite
+@22
+tb_riscv_sc.riscv_DUT.m_Register.writeData[31:0]
+tb_riscv_sc.riscv_DUT.m_Register.writeReg[4:0]
+@200
+-
+@1401200
+-regfile
+@c00200
+-ALU
+@200
+-
+@22
+tb_riscv_sc.riscv_DUT.m_ALU.A[31:0]
+tb_riscv_sc.riscv_DUT.m_ALU.B[31:0]
+tb_riscv_sc.riscv_DUT.m_ALU.ALUCtl[3:0]
+tb_riscv_sc.riscv_DUT.m_ALU.ALUOut[31:0]
+@1401200
+-ALU
+@c00200
+-ControlUnit
+@28
+tb_riscv_sc.riscv_DUT.m_Control.ALUOp[1:0]
+tb_riscv_sc.riscv_DUT.m_Control.ALUSrc
+tb_riscv_sc.riscv_DUT.m_Control.branch
+tb_riscv_sc.riscv_DUT.m_Control.memRead
+tb_riscv_sc.riscv_DUT.m_Control.memWrite
+tb_riscv_sc.riscv_DUT.m_Control.memtoReg
+@22
+tb_riscv_sc.riscv_DUT.m_Control.opcode[6:0]
+@28
+tb_riscv_sc.riscv_DUT.m_Control.regWrite
+@200
+-
+@1401200
+-ControlUnit
+@800200
+-DataMemory
+@22
+tb_riscv_sc.riscv_DUT.m_DataMemory.address[31:0]
+@28
+tb_riscv_sc.riscv_DUT.m_DataMemory.memRead
+@29
+tb_riscv_sc.riscv_DUT.m_DataMemory.memWrite
+@22
+tb_riscv_sc.riscv_DUT.m_DataMemory.readData[31:0]
+tb_riscv_sc.riscv_DUT.m_DataMemory.writeData[31:0]
+@200
+-
+@1000200
+-DataMemory
+[pattern_trace] 1
+[pattern_trace] 0
