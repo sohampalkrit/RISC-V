@@ -10,7 +10,7 @@ module Control_Unit (
 );
 
     always @(*) begin
-        // Default values (for undefined opcodes)
+        // Default values
         branch   = 0;
         memRead  = 0;
         memtoReg = 0;
@@ -34,22 +34,23 @@ module Control_Unit (
                 ALUOp    = 2'b00; // Addition for address calculation
             end
             
-            7'b0110011: begin // R-type (ADD, SUB, AND, OR, XOR)
+            7'b0110011: begin // R-type (ADD, SUB, AND, OR, XOR, SLL, SRL, SRA, SLT, SLTU)
                 regWrite = 1;
                 ALUOp    = 2'b10; // ALU uses funct3 and funct7
             end
             
-            7'b1100011: begin // BEQ, BGT (Branch)
+            7'b1100011: begin // Branch instructions (BEQ, BNE, BLT, BGE, etc.)
                 branch  = 1;
                 ALUOp   = 2'b01; // Subtraction for comparison
             end
             
             7'b1101111: begin // JAL (Jump and Link)
                 regWrite = 1;
-                ALUOp    = 2'b00; // Changed from 2'bxx to avoid x propagation
+                ALUSrc   = 1;
+                ALUOp    = 2'b00;
             end
             
-            7'b0010011: begin // I-type (ADDI, ORI, SLLI)
+            7'b0010011: begin // I-type (ADDI, ANDI, ORI, XORI, SLTI, SLTIU, etc.)
                 regWrite = 1;
                 ALUSrc   = 1;
                 ALUOp    = 2'b11; // Immediate operations

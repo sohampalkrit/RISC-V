@@ -1,41 +1,30 @@
 module ALU (
-    input [3:0] ALUCtl,
-    input [31:0] A, B,
-    output reg [31:0] ALUOut,
-    output zero
+    input [31:0] A,        // Operand 1
+    input [31:0] B,        // Operand 2
+    input [3:0] ALUControl, // Control signal from ALU_Control unit
+    output reg [31:0] Result, // ALU result
+    output reg Zero         // Zero flag (for branch instructions)
 );
 
-    // ALU Operation Codes
-    parameter ALU_ADD  = 4'b0000;  // ADD, ADDI, LW, SW
-    parameter ALU_SUB  = 4'b0001;  // SUB, BEQ
-    parameter ALU_AND  = 4'b0010;  // AND
-    parameter ALU_OR   = 4'b0011;  // OR, ORI
-    parameter ALU_XOR  = 4'b0100;  // XOR
-    parameter ALU_SLL  = 4'b0101;  // SLLI
-    parameter ALU_SRL  = 4'b0110;  // SRL
-    parameter ALU_SRA  = 4'b0111;  // SRA
-    parameter ALU_SLT  = 4'b1000;  // SLT
-    parameter ALU_BGT  = 4'b1001;  // BGT (A > B)
-    parameter ALU_JAL  = 4'b1010;  // JAL (PC + 4)
-
     always @(*) begin
-        case (ALUCtl)
-            ALU_ADD:  ALUOut = A + B;                        // Addition (LW, SW, ADD, ADDI)
-            ALU_SUB:  ALUOut = A - B;                        // Subtraction (SUB, BEQ)
-            ALU_AND:  ALUOut = A & B;                        // Bitwise AND
-            ALU_OR:   ALUOut = A | B;                        // Bitwise OR (ORI)
-            ALU_XOR:  ALUOut = A ^ B;                        // Bitwise XOR
-            ALU_SLL:  ALUOut = A << B[4:0];                  // Logical Left Shift (SLLI)
-            ALU_SRL:  ALUOut = A >> B[4:0];                  // Logical Right Shift
-            ALU_SRA:  ALUOut = $signed(A) >>> B[4:0];        // Arithmetic Right Shift
-            ALU_SLT:  ALUOut = ($signed(A) < $signed(B)) ? 1 : 0;  // Set Less Than (SLT)
-            ALU_BGT:  ALUOut = ($signed(A) > $signed(B)) ? 1 : 0;  // Branch Greater Than (BGT)
-            ALU_JAL:  ALUOut = A + 4;                        // Jump and Link (JAL)
-            default:  ALUOut = 32'h0;                        // Default case
+        // Default values
+        Result = 32'b0;
+        
+        case (ALUControl)
+            4'b0000: Result = A + B;       // ADD, ADDI, LW, SW
+            4'b0001: Result = A - B;       // SUB, BEQ, BNE (Zero flag used)
+            4'b0010: Result = A & B;       // AND, ANDI
+            4'b0011: Result = A | B;       // OR, ORI
+            4'b0100: Result = A ^ B;       // XOR, XORI
+            4'b0101: Result = A << B[4:0]; // SLL, SLLI
+            4'b0110: Result = A >> B[4:0]; // SRL, SRLI
+            4'b0111: Result = $signed(A) >>> B[4:0]; // SRA, SRAI
+            4'b1000: Result = ($signed(A) < $signed(B)) ? 32'b1 : 32'b0; // SLT, SLTI
+            4'b1001: Result = (A < B) ? 32'b1 : 32'b0; // SLTU, SLTIU
+            default: Result = 32'b0; // Undefined
         endcase
+        
+        // Zero flag for BEQ, BNE, BLT, BGE
+        Zero = (Result == 0) ? 1'b1 : 1'b0;
     end
-
-    // Zero flag for BEQ
-    assign zero = (ALUOut == 32'h0);
-
 endmodule

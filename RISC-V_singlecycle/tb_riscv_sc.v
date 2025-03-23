@@ -1,10 +1,12 @@
+`timescale 1ns/1ps
+
 module tb_riscv_sc;
-// Testbench for Single-Cycle RISC-V CPU
+// CPU Testbench
 
 reg clk;
 reg start;
 
-// Instantiate the DUT (Device Under Test)
+// Instantiate the SingleCycleCPU
 SingleCycleCPU riscv_DUT(clk, start);
 
 // Clock Generation: Toggle every 5 time units
@@ -14,14 +16,16 @@ initial begin
     // Initialize signals
     clk = 0;
     start = 0;
+    
+    // Enable VCD waveform dumping
+    $dumpfile("riscv_sc_tb.vcd");  // VCD file for GTKWave
+    $dumpvars(0, tb_riscv_sc);      // Dump all variables in this module
+    
+    // Start simulation
+    #10 start = 1;
 
-    // Generate VCD file for GTKWave
-    $dumpfile("riscv_sc_tb.vcd"); // VCD output file
-    $dumpvars(0, tb_riscv_sc);     // Dump all variables in this module
-
-    #10 start = 1;  // Start the CPU after 10 time units
-
-    #3000 $finish;  // Stop simulation after 3000 time units
+    // Run simulation for 3000 time units
+    #3000 $finish;
 end
 
 endmodule
