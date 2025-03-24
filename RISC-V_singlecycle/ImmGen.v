@@ -1,32 +1,21 @@
-module ImmGen #(parameter Width = 32) (
-    input [Width-1:0] inst,
-    output reg signed [Width-1:0] imm
+module ImmGen (
+    input [31:0] In,
+    output reg [31:0] Imm_Ext
 );
-    wire [6:0] opcode = inst[6:0];
-
+    wire [6:0] opcode;
+    assign opcode = In[6:0];
+    
     always @(*) begin
         case (opcode)
-            7'b0010011,  // I-type (ADDI, ANDI, ORI, XORI, SLLI, SRLI, SRAI)
-            7'b0000011,  // Load (LW, LH, LB, LHU, LBU)
-            7'b1100111:  // JALR
-                imm = {{20{inst[31]}}, inst[31:20]};  // Correct 12-bit sign-extended immediate
-
-            7'b0100011:  // S-type (SW, SH, SB)
-                imm = {{20{inst[31]}}, inst[31:25], inst[11:7]};  // Correct 12-bit sign-extended immediate
-
-            7'b1100011:  // B-type (BEQ, BNE, BLT, BGE, BLTU, BGEU)
-                // Corrected B-type immediate format
-                imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
-
-            7'b1101111:  // J-type (JAL)
-                imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0}; // Corrected 20-bit immediate
-
-            7'b0110111,  // LUI
-            7'b0010111:  // AUIPC
-                imm = {inst[31:12], 12'b0};  // 20-bit immediate shifted left
-
-            default: 
-                imm = 32'b0;  // Default case
+            7'b0000011: Imm_Ext = {{20{In[31]}}, In[31:20]}; // I-type (load)
+            7'b0010011: Imm_Ext = {{20{In[31]}}, In[31:20]}; // I-type (arithmetic)
+            7'b0100011: Imm_Ext = {{20{In[31]}}, In[31:25], In[11:7]}; // S-type (store)
+            7'b1100011: Imm_Ext = {{20{In[31]}}, In[31], In[7], In[30:25], In[11:8]}; // B-type (branch)
+            7'b1101111: Imm_Ext = {{12{In[31]}}, In[19:12], In[20], In[30:21]}; // J-type (jal)
+            7'b1100111: Imm_Ext = {{20{In[31]}}, In[31:20]}; // I-type (jalr)
+            7'b0110111: Imm_Ext = {In[31:12], 12'b0}; // U-type (lui)
+            7'b0010111: Imm_Ext = {In[31:12], 12'b0}; // U-type (auipc)
+            default: Imm_Ext = 32'b0;
         endcase
     end
 endmodule

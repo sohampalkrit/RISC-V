@@ -1,15 +1,17 @@
 module PC (
     input clk,
     input rst,
-    input [31:0] pc_i,
-    output reg [31:0] pc_o
+    input [31:0] pc_i,    // Next PC value input
+    output reg [31:0] pc_o // Current PC value output
 );
 
-always @(posedge clk or negedge rst) begin
-    if (!rst) 
-        pc_o <= 32'b0;  // Reset PC to 0 when rst is LOW
-    else 
-        pc_o <= pc_i;   // Update PC on rising clock edge
-end
+    // On reset, PC is set to 0
+    // On clock edge, PC is updated with next value
+    always @(posedge clk or posedge rst) begin
+        if (!rst)
+            pc_o <= 32'h00000000;
+        else
+            pc_o <= pc_i;
+    end
 
 endmodule

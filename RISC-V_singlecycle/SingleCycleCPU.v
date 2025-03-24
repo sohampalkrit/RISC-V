@@ -14,17 +14,13 @@ module SingleCycleCPU (
     input clk,
     input start
 );
-    // Internal wires
     wire [31:0] PC_Top, RD_Inst, RD1_Top, RD2_Top, IMM_top, ALU_result, Read_data, pcPlus4, branchTarget;
     wire [31:0] ALU_B_input, shifted_imm, WB_data;
     wire Regwrite, memwrite, memRead, memToReg, ALUSrc, branch, zero, PC_Src;
     wire [1:0] ALU_OP_top;
     wire [3:0] ALUControl_Top;
     
-    // Debug signal assignments
-    
-    
-    // Program Counter
+    // Program Counter with fixed logic
     PC m_PC(
         .clk(clk),
         .rst(start),
@@ -72,8 +68,8 @@ module SingleCycleCPU (
     
     // Immediate Generator
     ImmGen m_ImmGen(
-        .inst(RD_Inst),
-        .imm(IMM_top)
+        .In(RD_Inst),
+        .Imm_Ext(IMM_top)
     );
     
     // Shift Immediate Left by 1 (for branch calculations)
@@ -89,38 +85,30 @@ module SingleCycleCPU (
         .sum(branchTarget)
     );
     
-    // Branch Detection Logic
+    // Simplified branch logic - for BEQ instructions
+    // In RISC-V, branch opcode is 1100011 (0x63)
+    // For BEQ, funct3 is 000
     wire is_branch = (RD_Inst[6:0] == 7'b1100011);
     wire [2:0] funct3 = RD_Inst[14:12];
     
-    // Special Case for "beq zero, zero, LOOP"
-    wire is_beq_zero_zero = is_branch && (funct3 == 3'b000) &&
-                           (RD_Inst[19:15] == 5'b00000) && // rs1 = zero
-                           (RD_Inst[24:20] == 5'b00000);   // rs2 = zero
-    
-    // Branch Outcome Determination Logic
+    // Determine branch outcome based on instruction type
     reg branch_taken;
     always @(*) begin
         branch_taken = 0; // Default: don't take branch
         
         if (is_branch) begin
-            if (is_beq_zero_zero) begin
-                branch_taken = 1; // Unconditional jump (infinite loop scenario)
-            end else begin
-                case (funct3)
-                    3'b000: branch_taken = zero;          // BEQ - branch if equal
-                    3'b001: branch_taken = ~zero;         // BNE - branch if not equal
-                    3'b100: branch_taken = ALU_result[0]; // BLT - branch if less than
-                    3'b101: branch_taken = ~ALU_result[0];// BGE - branch if greater/equal
-                    3'b110: branch_taken = ALU_result[0]; // BLTU - branch if less than (unsigned)
-                    3'b111: branch_taken = ~ALU_result[0];// BGEU - branch if greater/equal (unsigned)
-                    default: branch_taken = 0;
-                endcase
-            end
+            case (funct3)
+                3'b000: branch_taken = zero;          // BEQ - branch if equal (zero=1)
+                3'b001: branch_taken = ~zero;         // BNE - branch if not equal (zero=0)
+                3'b100: branch_taken = ALU_result[0]; // BLT - branch if less than (signed)
+                3'b101: branch_taken = ~ALU_result[0];// BGE - branch if greater/equal (signed)
+                3'b110: branch_taken = ALU_result[0]; // BLTU - branch if less than (unsigned)
+                3'b111: branch_taken = ~ALU_result[0];// BGEU - branch if greater/equal (unsigned)
+                default: branch_taken = 0;
+            endcase
         end
     end
     
-    // PC source selection
     assign PC_Src = branch & branch_taken;
     
     // ALU Source Selection

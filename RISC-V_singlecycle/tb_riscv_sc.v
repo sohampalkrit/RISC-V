@@ -18,6 +18,7 @@ initial begin
     start = 0;
     
     // Enable VCD waveform dumping
+
     $dumpfile("riscv_sc_tb.vcd");  // VCD file for GTKWave
     $dumpvars(0, tb_riscv_sc);      // Dump all variables in this module
     
