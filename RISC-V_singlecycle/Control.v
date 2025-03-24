@@ -20,32 +20,38 @@ module Control_Unit (
         regWrite = 0;
         
         case (opcode)
-            7'b0110011: begin // R-type (add, sub, etc.)
+            7'b0110011: begin // R-type (ADD, SUB, etc.)
                 regWrite = 1;
                 ALUOp = 2'b10;
             end
             
-            7'b0010011: begin // I-type (addi, etc.)
+            7'b0010011: begin // I-type (ADDI, etc.)
                 regWrite = 1;
                 ALUSrc = 1;
                 ALUOp = 2'b10;
             end
             
-            7'b0000011: begin // I-type (lw, etc.)
+            7'b0000011: begin // I-type (LW, etc.)
                 memRead = 1;
                 regWrite = 1;
                 ALUSrc = 1;
                 memtoReg = 1;
             end
             
-            7'b0100011: begin // S-type (sw, etc.)
+            7'b0100011: begin // S-type (SW, etc.)
                 memWrite = 1;
                 ALUSrc = 1;
             end
             
-            7'b1100011: begin // B-type (beq, bne, etc.)
+            7'b1100011: begin // B-type (BEQ, BNE, etc.)
                 branch = 1;
                 ALUOp = 2'b01;
+            end
+            
+            7'b1110011: begin // Custom Instruction (CTZ)
+                regWrite = 1;
+                ALUOp = 2'b11; // Custom ALU operation
+                ALUSrc = 0; // Only uses rs1
             end
             
             default: begin
