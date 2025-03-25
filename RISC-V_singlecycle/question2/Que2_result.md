@@ -42,4 +42,36 @@ This table includes the **CTZ (Count Trailing Zeros)** instruction, which is an 
 - The **ALUOp (11)** ensures that the ALU performs the trailing zero count.
 
 ---
-This document details RISC-V control signals before and after adding the `CTZ` instruction.
+
+## Execution Breakdown of Loop Code
+
+### Initial Values:
+- **x0**: Always 0 (hardwired zero register)
+- **x1**: 8 (initial value)
+- **x2**: 2 (initial value)
+
+### Code Execution:
+
+#### 1st Iteration:
+1. `slt x2, x0, x1`  
+   - Since `0 < 8`, `x2 = 1`.
+2. `beq x2, x0, DONE`  
+   - `x2 ≠ x0`, so **branch not taken**.
+3. `addi x1, x1, -1`  
+   - `x1 = 8 - 1 = 7`.
+4. `addi x2, x2, 2`  
+   - `x2 = 1 + 2 = 3`.
+5. `j loop`  
+   - **Jump back to loop**.
+
+#### 2nd Iteration:
+1. `slt x2, x0, x1` → `x2 = 1`  
+2. `beq x2, x0, DONE` → **branch not taken**  
+3. `addi x1, x1, -1` → `x1 = 6`  
+4. `addi x2, x2, 2` → `x2 = 3`  
+5. `j loop` → **Jump back**  
+
+This continues until `x1 = 0`, at which point the `beq` instruction branches to `DONE`.
+
+### Final Values:
+- `x2 = 0` (as the last iteration doesn't execute `addi x2, x2, 2`).
