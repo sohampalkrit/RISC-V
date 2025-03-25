@@ -47,11 +47,11 @@ The entire execution of an instruction is completed within a single clock cycle.
 - Supports various instruction types (R-type, I-type, S-type, B-type)
 
 ## Output Waveforms
-Include the generated waveform images here by replacing `<waveform_path>` with the actual path.
+
 
 ```
-![Waveform 1](RISC-V-singlecycle\part1_Result)
-![Waveform 2](waveform1.jpg)
+![Waveform 1](RISC-V-singlecycle\waveform1.jpg)
+![Waveform 2](RISC-V-singlecycle\waveform1.jpg)
 ```
 
 ## Conclusion
