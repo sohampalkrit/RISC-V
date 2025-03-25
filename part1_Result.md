@@ -49,10 +49,8 @@ The entire execution of an instruction is completed within a single clock cycle.
 ## Output Waveforms
 
 
-```
 ![Waveform 1](RISC-V-singlecycle\waveform1.jpg)
-![Waveform 2](RISC-V-singlecycle\waveform1.jpg)
-```
+![Waveform 2](./waveforms/waveform2.png)
 
 ## Conclusion
 This project demonstrates the implementation of a basic single-cycle RISC-V CPU, covering instruction execution and data flow. Further improvements can be made by optimizing performance or transitioning to a pipelined architecture.
