@@ -49,7 +49,7 @@ The entire execution of an instruction is completed within a single clock cycle.
 ## Output Waveforms
 
 
-![Waveform 1](RISC-V-singlecycle\waveform1.jpg)
+![Waveform 1](RISC-V-singlecycle/RISC-V_singlecycle/waveform1.jpg)
 ![Waveform 2](./waveforms/waveform2.png)
 
 ## Conclusion
