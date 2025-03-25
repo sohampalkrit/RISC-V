@@ -8,7 +8,7 @@
 
 ## Implementation 
 ![Waveform 1](waveforms/singlecycle.png)
-![Waveform 2](waveforms/pipelined.jpg)
+
 
 ## Project Overview
 Brief description of the RISC-V CPU implementation
