@@ -4,7 +4,7 @@
 - **Name:** Soham Palkrit
 - **Department:** Electrical and Electronics Engineering (EEE)
 - **Roll Number:** 231EE142
-- **Contact:** 93220887306
+- **Contact:** 9322087306
 
 ## Implementation 
 ![Waveform 1](waveforms/singlecycle.png)
