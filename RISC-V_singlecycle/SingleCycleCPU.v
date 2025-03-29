@@ -16,7 +16,7 @@ module SingleCycleCPU (
 );
     wire [31:0] PC_Top, RD_Inst, RD1_Top, RD2_Top, IMM_top, ALU_result, Read_data, pcPlus4, branchTarget;
     wire [31:0] ALU_B_input, shifted_imm, WB_data;
-    wire Regwrite, memwrite, memRead, memToReg, ALUSrc, branch, zero, PC_Src;
+    wire Regwrite, memwrite, memRead, memToReg, ALUSrc, Branch, zero, PC_Src;
     wire [1:0] ALU_OP_top;
     wire [3:0] ALUControl_Top;
     
@@ -44,7 +44,7 @@ module SingleCycleCPU (
     // Control Unit
     Control_Unit m_Control(
         .opcode(RD_Inst[6:0]),
-        .branch(branch),
+        .branch(Branch),
         .memRead(memRead),
         .memtoReg(memToReg),
         .ALUOp(ALU_OP_top),
@@ -73,15 +73,15 @@ module SingleCycleCPU (
     );
     
     // Shift Immediate Left by 1 (for branch calculations)
-    ShiftLeftOne m_ShiftLeftOne(
-        .i(IMM_top),
-        .o(shifted_imm)
-    );
+    // ShiftLeftOne m_ShiftLeftOne(
+    //     .i(IMM_top),
+    //     .o(shifted_imm)
+    // );
     
     // Branch Target Calculation
     Adder m_Adder_2(
         .a(PC_Top),
-        .b(shifted_imm),
+        .b(IMM_top),
         .sum(branchTarget)
     );
     
@@ -109,7 +109,7 @@ module SingleCycleCPU (
         end
     end
     
-    assign PC_Src = branch & branch_taken;
+    assign PC_Src = Branch & branch_taken;
     
     // ALU Source Selection
     Mux2to1 #(.size(32)) m_Mux_ALU(

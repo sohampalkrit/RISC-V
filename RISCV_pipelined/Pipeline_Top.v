@@ -3,8 +3,6 @@
 `include "ExecutionCycle.v"
 `include "MemoryCycle.v"
 `include "WriteBackCycle.v"
-`include "ForwardingUnit.v"
-`include "HazardDetectionUnit.v"
 
 module Pipeline_Top(
     input clk, 
@@ -15,7 +13,7 @@ module Pipeline_Top(
     // Declaration of Interim Wires
     wire PCSrcE, RegWriteW, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, BranchE, JumpE;
     wire RegWriteM, MemWriteM, ResultSrcM;
-    wire ResultSrcW, StallF, StallD, FlushE, FlushD;
+    wire ResultSrcW;
     wire [3:0] ALUControlE;
     wire [4:0] RD_E, RD_M, RDW, RS1_D, RS2_D;
     wire [31:0] PCTargetE, InstrD, PCD, PCPlus4D, ResultW;
@@ -23,31 +21,6 @@ module Pipeline_Top(
     wire [31:0] PCPlus4M, WriteDataM, ALU_ResultM;
     wire [31:0] PCPlus4W, ALU_ResultW, ReadDataW;
     wire [4:0] RS1_E, RS2_E;
-    wire [1:0] ForwardAE, ForwardBE;
-
-    // Hazard Detection Unit
-    HazardDetectionUnit HazardUnit (
-        .RS1_D(RS1_D),
-        .RS2_D(RS2_D),
-        .RD_E(RD_E),
-        .ResultSrcE(ResultSrcE),
-        .RegWriteM(RegWriteM),
-        .StallF(StallF),
-        .StallD(StallD),
-        .FlushE(FlushE)
-    );
-
-    // Forwarding Unit
-    forwarding_unit ForwardingUnit (
-        .RS1_E(RS1_E),
-        .RS2_E(RS2_E),
-        .RD_M(RD_M),
-        .RD_W(RDW),
-        .RegWriteM(RegWriteM),
-        .RegWriteW(RegWriteW),
-        .ForwardA_E(ForwardAE),
-        .ForwardB_E(ForwardBE)
-    );
 
     // Fetch Stage
     fetch_cycle Fetch (
@@ -55,7 +28,6 @@ module Pipeline_Top(
         .rst(rst), 
         .PCSrcE(PCSrcE), 
         .PCTargetE(PCTargetE), 
-        .StallF(StallF),
         .InstrD(InstrD), 
         .PCD(PCD), 
         .PCPlus4D(PCPlus4D)
@@ -65,8 +37,6 @@ module Pipeline_Top(
     decode_cycle Decode (
         .clk(clk), 
         .rst(rst), 
-        .StallD(StallD),
-        .FlushD(FlushD),
         .InstrD(InstrD), 
         .PCD(PCD), 
         .PCPlus4D(PCPlus4D), 
@@ -96,7 +66,6 @@ module Pipeline_Top(
     execute_cycle Execute (
         .clk(clk), 
         .rst(rst), 
-        .FlushE(FlushE),
         .RegWriteE(RegWriteE), 
         .ALUSrcE(ALUSrcE), 
         .MemWriteE(MemWriteE), 
@@ -118,10 +87,7 @@ module Pipeline_Top(
         .RD_M(RD_M), 
         .PCPlus4M(PCPlus4M), 
         .WriteDataM(WriteDataM), 
-        .ALU_ResultM(ALU_ResultM),
-        .ResultW(ResultW),
-        .ForwardA_E(ForwardAE),
-        .ForwardB_E(ForwardBE)
+        .ALU_ResultM(ALU_ResultM)
     );
     
     // Memory Stage

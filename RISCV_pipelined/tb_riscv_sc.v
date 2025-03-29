@@ -1,27 +1,46 @@
-module tb_riscv_sc;
-// Testbench for Single-Cycle RISC-V CPU
+`timescale 1ns/1ps
 
-reg clk;
-reg start;
+module Pipeline_Top_tb;
 
-// Instantiate the DUT (Device Under Test)
-SingleCycleCPU riscv_DUT(clk, start);
+    reg clk;
+    reg rst;
+    reg start;
 
-// Clock Generation: Toggle every 5 time units
-initial forever #5 clk = ~clk;
+    // Instantiate the processor
+    Pipeline_Top uut (
+        .clk(clk),
+        .rst(rst),
+        .start(start)
+    );
 
-initial begin
-    // Initialize signals
-    clk = 0;
-    start = 0;
+    // Clock generation (50 MHz -> 20ns period)
+    always #10 clk = ~clk;
 
-    // Generate VCD file for GTKWave
-    $dumpfile("riscv_sc_tb.vcd"); // VCD output file
-    $dumpvars(0, tb_riscv_sc);     // Dump all variables in this module
+    initial begin
+        // Initialize signals
+        clk = 0;
+        rst = 1;
+        start = 0;
 
-    #10 start = 1;  // Start the CPU after 10 time units
+        // Dump file setup for GTKWave
+        $dumpfile("Pipeline_Top_tb.vcd");  // VCD file for waveform
+        $dumpvars(0, Pipeline_Top_tb);      // Dump all variables in this module
 
-    #3000 $finish;  // Stop simulation after 3000 time units
-end
+        // Reset sequence
+        #20 rst = 0;  
+        #20 rst = 1;
+        #20 rst = 0;  
+
+        // Start execution
+        #40 start = 1;
+
+        // Run simulation for 2000 ns
+        #2000 $finish;
+    end
+
+    // Monitor signals
+    initial begin
+        $monitor("Time=%0t, PC=%h, Instruction=%h", $time, uut.Fetch.InstrD, uut.Fetch.PCD);
+    end
 
 endmodule

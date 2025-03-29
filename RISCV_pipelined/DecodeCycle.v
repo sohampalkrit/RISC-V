@@ -5,8 +5,6 @@
 
 module decode_cycle(
     input clk, rst, 
-    input StallD, 
-    input FlushD,
     input [31:0] InstrD, PCD, PCPlus4D, ResultW,
     input RegWriteW,
     input [4:0] RDW,
@@ -16,10 +14,10 @@ module decode_cycle(
     output [4:0] RS1_E, RS2_E, RD_E,
     output [4:0] RS1_D, RS2_D
 );
+
     // Control Signals
     wire RegWriteD, ALUSrcD, MemWriteD, ResultSrcD, BranchD, JumpD;
     wire [1:0] ALUOpD;
-    wire [2:0] ImmSrcD;
     wire [3:0] ALUControlD;
     wire [31:0] RD1_D, RD2_D, Imm_Ext_D;
 
@@ -30,7 +28,7 @@ module decode_cycle(
     reg [4:0] RD_D_r, RS1_D_r, RS2_D_r;
     reg [31:0] PCD_r, PCPlus4D_r;
 
-    // Assign RS1 and RS2 outputs
+    // Assign RS1 and RS2 outputs (Used for forwarding/hazard detection)
     assign RS1_D = InstrD[19:15];
     assign RS2_D = InstrD[24:20];
 
@@ -38,13 +36,12 @@ module decode_cycle(
     Control_Unit control (
         .opcode(InstrD[6:0]),
         .branch(BranchD),
-        .memRead(),  // Not used in this implementation
         .memtoReg(ResultSrcD),
         .ALUOp(ALUOpD),
         .memWrite(MemWriteD),
         .ALUSrc(ALUSrcD),
-        .regWrite(RegWriteD)
-        //.jump(JumpD)  // Added Jump signal
+        .regWrite(RegWriteD),
+        .jump(JumpD)  // Jump signal added
     );
 
     // ALU Control
@@ -52,7 +49,7 @@ module decode_cycle(
         .ALUOp(ALUOpD),
         .funct7(InstrD[31:25]),
         .funct3(InstrD[14:12]),
-        .ALUCtl(ALUControlD)
+        .ALUControl(ALUControlD)
     );
 
     // Register File
@@ -68,17 +65,16 @@ module decode_cycle(
         .readData2(RD2_D)
     );
 
-    // Sign Extension
+    // Immediate Generator
     ImmGen extension (
-        .inst(InstrD),
-        .imm(Imm_Ext_D),
-        .ImmSrc(ImmSrcD)
+        .In(InstrD),
+        .Imm_Ext(Imm_Ext_D)
     );
 
-    // Pipeline Register Logic with Stall and Flush Handling
+    // Pipeline Register Logic (Fetch → Decode)
     always @(posedge clk or negedge rst) begin
         if (!rst) begin
-            // Reset all registers to zero
+            // Reset all registers
             RegWriteD_r <= 0;
             ALUSrcD_r <= 0;
             MemWriteD_r <= 0;
@@ -94,27 +90,9 @@ module decode_cycle(
             PCPlus4D_r <= 0;
             RS1_D_r <= 0;
             RS2_D_r <= 0;
-        end
-        else if (FlushD) begin
-            // Flush: Reset control signals and instruction-related registers
-            RegWriteD_r <= 0;
-            ALUSrcD_r <= 0;
-            MemWriteD_r <= 0;
-            ResultSrcD_r <= 0;
-            BranchD_r <= 0;
-            JumpD_r <= 0;
-            ALUControlD_r <= 4'b0000;
-            RD1_D_r <= 0;
-            RD2_D_r <= 0;
-            Imm_Ext_D_r <= 0;
-            RD_D_r <= 0;
-            PCD_r <= 0;
-            PCPlus4D_r <= 0;
-            RS1_D_r <= 0;
-            RS2_D_r <= 0;
-        end
-        else if (!StallD) begin
-            // Normal pipeline progression when not stalled
+        end 
+        else begin
+            // Normal pipeline progression
             RegWriteD_r <= RegWriteD;
             ALUSrcD_r <= ALUSrcD;
             MemWriteD_r <= MemWriteD;

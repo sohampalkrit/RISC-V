@@ -30,15 +30,12 @@ module fetch_cycle(
         .out(PC_F)
     );
 
-    // PC Counter with Stall Logic
-    wire [31:0] next_pc;
-    assign next_pc = StallF ? PCF : PC_F;
 
     PC Program_Counter (
         .clk(clk),
         .rst(!start),
         .pc_o(PCF),
-        .pc_i(next_pc)
+        .pc_i(PC_F)
     );
 
     // Instruction Memory
@@ -54,14 +51,13 @@ module fetch_cycle(
         .sum(PCPlus4F)
     );
 
-    // Fetch Cycle Register Logic with Stall Handling
     always @(posedge clk or negedge rst) begin
         if(rst == 1'b0) begin
             InstrF_reg <= 32'h00000000;
             PCF_reg <= 32'h00000000;
             PCPlus4F_reg <= 32'h00000000;
         end
-        else if(!StallF) begin
+        else begin
             InstrF_reg <= InstrF;
             PCF_reg <= PCF;
             PCPlus4F_reg <= PCPlus4F;
