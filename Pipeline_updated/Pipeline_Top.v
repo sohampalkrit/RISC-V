@@ -1,3 +1,5 @@
+
+
 `include "Fetch_Cycle.v"
 `include "Decode_Cyle.v"
 `include "Execute_Cycle.v"
@@ -12,8 +14,8 @@
 `include "Sign_Extend.v"
 `include "ALU.v"
 `include "Data_Memory.v"
-`include "Hazard_Unit.v"
-`include "Forwarding_Unit.v"
+`include "Hazard_unit.v"
+
 
 module Pipeline_top(clk, rst);
 
@@ -23,14 +25,14 @@ module Pipeline_top(clk, rst);
     // Declaration of Interim Wires
     wire PCSrcE, RegWriteW, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, BranchE, RegWriteM, MemWriteM, ResultSrcM, ResultSrcW;
     wire [3:0] ALUControlE;
-    wire [4:0] RD_E, RD_M, RD_W;
+    wire [4:0] RD_E, RD_M, RDW;
     wire [31:0] PCTargetE, InstrD, PCD, PCPlus4D, ResultW, RD1_E, RD2_E, Imm_Ext_E, PCE, PCPlus4E, PCPlus4M, WriteDataM, ALU_ResultM;
     wire [31:0] PCPlus4W, ALU_ResultW, ReadDataW;
     wire [4:0] RS1_E, RS2_E;
     wire [1:0] ForwardBE, ForwardAE;
+    
 
-    // Module Instantiation
-
+    // Module Initiation
     // Fetch Stage
     fetch_cycle Fetch (
                         .clk(clk), 
@@ -50,7 +52,7 @@ module Pipeline_top(clk, rst);
                         .PCD(PCD), 
                         .PCPlus4D(PCPlus4D), 
                         .RegWriteW(RegWriteW), 
-                        .RDW(RD_W), 
+                        .RDW(RDW), 
                         .ResultW(ResultW), 
                         .RegWriteE(RegWriteE), 
                         .ALUSrcE(ALUSrcE), 
@@ -68,7 +70,7 @@ module Pipeline_top(clk, rst);
                         .RS2_E(RS2_E)
                     );
 
-    // Execute Stage (Forwarding Integrated)
+    // Execute Stage
     execute_cycle Execute (
                         .clk(clk), 
                         .rst(rst), 
@@ -111,7 +113,7 @@ module Pipeline_top(clk, rst);
                         .ALU_ResultM(ALU_ResultM), 
                         .RegWriteW(RegWriteW), 
                         .ResultSrcW(ResultSrcW), 
-                        .RD_W(RD_W), 
+                        .RD_W(RDW), 
                         .PCPlus4W(PCPlus4W), 
                         .ALU_ResultW(ALU_ResultW), 
                         .ReadDataW(ReadDataW)
@@ -128,16 +130,16 @@ module Pipeline_top(clk, rst);
                         .ResultW(ResultW)
                     );
 
-    // Forwarding Unit (Data Forwarding Integration)
-    Forwarding_Unit Forwarding_Block (
-                        .RS1_E(RS1_E), 
-                        .RS2_E(RS2_E), 
-                        .RD_M(RD_M), 
-                        .RD_W(RD_W), 
+    // Hazard Unit
+    hazard_unit Forwarding_block (
+                        .rst(rst), 
                         .RegWriteM(RegWriteM), 
                         .RegWriteW(RegWriteW), 
+                        .RD_M(RD_M), 
+                        .RD_W(RDW), 
+                        .Rs1_E(RS1_E), 
+                        .Rs2_E(RS2_E), 
                         .ForwardAE(ForwardAE), 
                         .ForwardBE(ForwardBE)
-                    );
-
+                        );
 endmodule

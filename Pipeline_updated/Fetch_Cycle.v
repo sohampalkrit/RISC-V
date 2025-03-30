@@ -1,3 +1,5 @@
+
+
 module fetch_cycle(clk, rst, PCSrcE, PCTargetE, InstrD, PCD, PCPlus4D);
 
     // Declare input & outputs
