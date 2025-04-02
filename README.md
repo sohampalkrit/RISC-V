@@ -6,14 +6,5 @@
 - **Roll Number:** 231EE142
 - **Contact:** 9322087306
 
-## Implementation 
-![Waveform 1](waveforms/singlecycle.png)
 
-
-## Project Overview
-Brief description of the RISC-V CPU implementation
-
-## Key Components
-- Single Cycle CPU
-- Pipelined CPU Architecture
 
