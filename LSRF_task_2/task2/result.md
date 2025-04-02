@@ -7,8 +7,7 @@ This system processes random numbers from an LFSR (Linear Feedback Shift Registe
 2. **Histogram Processor (s_m_hist.v)** - Categorizes numbers and manages bin counts
 3. **Memory Controller (axi_ram.v)** - Stores histogram results
 
-![Waveform Diagram Placeholder](#) 
-*Insert waveform image here showing the AXI and AXI-Stream transactions between modules*
+
 
 ## 1. LFSR Controller (`s_axil.v`)
 
@@ -161,7 +160,7 @@ Run the script to generate a pseudorandom sequence of 10,000 numbers and visuali
 *Figure 1: System timing diagram showing AXI transactions between modules*
 
 ## Python Histogram result
-![Waveform Diagram](waveforms/waveform2.jpg) 
+![Waveform Diagram](waveforms/waveform2.png) 
 
 ## probability distribution curve
 ![Waveform Diagram](waveforms/waveform3.jpg) 
