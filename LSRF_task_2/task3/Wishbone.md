@@ -1,6 +1,15 @@
 # honestly I have not attended this seesion so i have written what i got from this assignment 
 ![Diagram](info/page1.jpg) 
+
+
+
+
 ![Diagram](info/page2.jpg) 
+
+
+
+
+
 ![Diagram](info/page3.jpg) 
 
 # Caravel Harness Chip Overview
