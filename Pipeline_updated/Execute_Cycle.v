@@ -7,9 +7,13 @@ module execute_cycle(
     input [31:0] PCE, PCPlus4E,
     input [31:0] ResultW,
     input [1:0] ForwardA_E, ForwardB_E,
+    input PredictionE,                // Prediction signal from ID
+    input [31:0] PredictedPCE_E,      // Predicted PC from ID
+
     output PCSrcE, RegWriteM, MemWriteM, ResultSrcM,
     output [4:0] RD_M,
-    output [31:0] PCPlus4M, WriteDataM, ALU_ResultM, PCTargetE
+    output [31:0] PCPlus4M, WriteDataM, ALU_ResultM, PCTargetE,
+    output FlushE                      // Flush signal for misprediction
 );
 
     // Internal Wires
@@ -17,6 +21,7 @@ module execute_cycle(
     wire [31:0] ALU_Result_Main, ALU_Result_Branch;
     wire ZeroE, Zero_Branch;
     wire UseBranchALU;
+    wire Mispredicted;
 
     // Mux for Source A
     Mux_3_by_1 srca_mux(
@@ -46,8 +51,11 @@ module execute_cycle(
         .OverFlow(), .Carry(), .Zero(Zero_Branch), .Negative()
     );
 
+    // Check if prediction was incorrect
+    assign Mispredicted = (PredictionE && (PredictedPCE_E != ALU_Result_Branch));
+
     // ALU Selection Logic
-    assign UseBranchALU = (BranchE);  // Only use branch ALU if branch condition is met
+    assign UseBranchALU = BranchE;  
     assign ALU_ResultM = (UseBranchALU) ? ALU_Result_Branch : ALU_Result_Main;
     assign PCTargetE = ALU_Result_Branch;
 
@@ -75,12 +83,13 @@ module execute_cycle(
     end
 
     // Output Assignments
-    assign PCSrcE = (BranchE & ZeroE); // Ensure branch only happens on correct condition
+    assign PCSrcE = (BranchE & ZeroE) ;//| Mispredicted; // Misprediction triggers new PC
     assign RegWriteM = RegWriteE_r;
     assign MemWriteM = MemWriteE_r;
     assign ResultSrcM = ResultSrcE_r;
     assign RD_M = RD_E_r;
     assign PCPlus4M = PCPlus4E_r;
     assign WriteDataM = RD2_E_r;
+    assign FlushE = Mispredicted; // Flush the pipeline if misprediction is detected
 
 endmodule
