@@ -1,4 +1,4 @@
-# honestly I have not attended this seesion so i have written what i got from this assignment 
+#  TBH I have not attended this seesion so i have written what i got from this assignment and online and AI
 ![Diagram](info/page1.jpg) 
 
 
