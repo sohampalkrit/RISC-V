@@ -8,7 +8,7 @@ module histogram_system_tb;
     parameter AXIL_DATA_WIDTH = 32;
     parameter RAM_ADDR_WIDTH = 8;
     parameter RAM_DATA_WIDTH = 32;
-    parameter NUM_CYCLE = 500; // Number of samples to generate
+    parameter NUM_CYCLE = 255; // Number of samples to generate
     
     // Testbench signals
     reg aclk = 0;

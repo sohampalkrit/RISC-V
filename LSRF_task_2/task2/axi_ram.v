@@ -1,6 +1,4 @@
-`timescale 1ns / 1ps
-
-module axi_ram(
+module axi_ram (
     input aclk,
     input aresetn,
 
@@ -20,125 +18,83 @@ module axi_ram(
     output reg [31:0] debug_rdata
 );
 
-    // Memory parameters
-    parameter MEM_SIZE = 288;
-    parameter MEM_ADDR_WIDTH = 8;
+    // RAM storage - 256 bytes
+    reg [7:0] memory [0:255];
     
-    // Memory array
-    reg [7:0] mem [0:MEM_SIZE-1];
+    // Format: [31:24]=unused, [23:16]=address, [15:8]=unused, [7:0]=data
+    wire [7:0] write_addr = s_axis_tdata[23:16];
+    wire [7:0] write_data = s_axis_tdata[7:0];
     
-    // State machine states
-    localparam [1:0] 
-        IDLE = 2'b00,
-        WRITE = 2'b01,
-        READ = 2'b10;
+    // Write state machine
+    reg write_state;
+    localparam WRITE_IDLE = 1'b0;
+    localparam WRITE_ACK = 1'b1;
     
-    reg [1:0] state;
-    reg [MEM_ADDR_WIDTH-1:0] read_addr;
-    
-    // Debug counters
-    reg [31:0] write_operations;
-    reg [31:0] read_operations;
-    
-    integer i; // For initialization loop
-
-    // Initialize memory and registers
+    // Initialize memory
+    integer i;
     initial begin
-        state = IDLE;
         s_axis_tready = 1'b1;
         m_axis_tvalid = 1'b0;
-        debug_rdata = 32'h0;
-        read_addr = 0;
-        write_operations = 0;
-        read_operations = 0;
+        write_state = WRITE_IDLE;
         
-        for (i = 0; i < MEM_SIZE; i = i + 1) begin
-            mem[i] = 8'h0;
+        for (i = 0; i < 256; i = i + 1) begin
+            memory[i] = 8'h0;
         end
     end
-
-    // Main state machine
+    
+    // Write logic - handle incoming AXI-Stream data
     always @(posedge aclk or negedge aresetn) begin
         if (!aresetn) begin
-            // Reset logic
-            state <= IDLE;
             s_axis_tready <= 1'b1;
-            m_axis_tvalid <= 1'b0;
-            read_addr <= 0;
-            write_operations <= 0;
-            read_operations <= 0;
+            write_state <= WRITE_IDLE;
             
-            for (i = 0; i < MEM_SIZE; i = i + 1) begin
-                mem[i] <= 8'h0;
+            for (i = 0; i < 256; i = i + 1) begin
+                memory[i] <= 8'h0;
             end
-        end
-        else begin
-            case (state)
-                IDLE: begin
-                    // Accept input data when valid
+        end else begin
+            case (write_state)
+                WRITE_IDLE: begin
+                    // Handle write requests from the AXI-Stream interface
                     if (s_axis_tvalid && s_axis_tready) begin
-                        state <= WRITE;
-                        s_axis_tready <= 1'b0; // Not ready while processing
+                        // Write data to memory
+                        memory[write_addr] <= write_data;
+                        
+                        // Go to acknowledge state
+                        s_axis_tready <= 1'b0;
+                        write_state <= WRITE_ACK;
                     end
                 end
                 
-                WRITE: begin
-                    // Extract address from the correct position in the input data
-                    if (s_axis_tdata[23:16] < MEM_SIZE) begin
-                        // Store the data byte at the specified address
-                        mem[s_axis_tdata[23:16]] <= s_axis_tdata[7:0];
-                        write_operations <= write_operations + 1;
-                    end
-                    
-                    // Return to IDLE state and indicate ready for next transaction
-                    state <= IDLE;
+                WRITE_ACK: begin
+                    // Wait one cycle to acknowledge the write
+                    // This simulates the delay of a real memory
                     s_axis_tready <= 1'b1;
+                    write_state <= WRITE_IDLE;
                 end
                 
-                READ: begin
-                    // Only update tdata if not already valid (prevents overwriting during backpressure)
-                    if (!m_axis_tvalid) begin
-                        m_axis_tdata <= {24'h0, mem[read_addr]};
-                        m_axis_tvalid <= 1'b1;
-                        read_operations <= read_operations + 1;
-                    end
-                    
-                    // When receiver is ready and data is valid, complete the transaction
-                    if (m_axis_tready && m_axis_tvalid) begin
-                        m_axis_tvalid <= 1'b0;
-                        state <= IDLE;
-                    end
-                end
-
                 default: begin
-                    state <= IDLE;
+                    write_state <= WRITE_IDLE;
+                    s_axis_tready <= 1'b1;
                 end
             endcase
         end
     end
-
-    // Debug read interface
-    always @(posedge aclk) begin
-        if (debug_rd_en) begin
-            if (debug_addr < MEM_SIZE) begin
-                // Return memory content at the specified address
-                debug_rdata <= {24'h0, mem[debug_addr]};
-                read_operations <= read_operations + 1;
+    
+    // Read logic - handle debug reads
+    always @(posedge aclk or negedge aresetn) begin
+        if (!aresetn) begin
+            debug_rdata <= 32'h0;
+            m_axis_tvalid <= 1'b0;
+            m_axis_tdata <= 32'h0;
+        end else begin
+            // Handle debug read requests
+            if (debug_rd_en) begin
+                debug_rdata <= {24'h0, memory[debug_addr]};
             end
-            else if (debug_addr == 8'hF0) begin
-                // Return number of write operations
-                debug_rdata <= write_operations;
-            end
-            else if (debug_addr == 8'hF4) begin
-                // Return number of read operations
-                debug_rdata <= read_operations;
-            end
-            else if (debug_addr == 8'hF8) begin
-                // Return debug register indicating module is working
-                debug_rdata <= 32'hABCD1234;
-            end
-            else begin
-                debug_rdata <= 32'hDEADBEEF;
+            
+            // Handle AXI-Stream read requests (if needed)
+            if (m_axis_tready && m_axis_tvalid) begin
+                m_axis_tvalid <= 1'b0;
             end
         end
     end
