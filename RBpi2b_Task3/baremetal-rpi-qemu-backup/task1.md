@@ -152,5 +152,5 @@ Hello World!
 ## 🔚 Summary
 This task involved setting up the low-level UART interface of Raspberry Pi in a **bare-metal environment**, using a minimal C runtime and ARM assembly. The result is a foundational I/O system that enables further kernel development and debugging capabilities via serial output.
 
-> Next step: move to EL0 and implement system calls!
+
 
