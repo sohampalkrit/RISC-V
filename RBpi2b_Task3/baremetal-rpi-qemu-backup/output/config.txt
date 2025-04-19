@@ -1,0 +1,7 @@
+config.txt
+arm_64bit=1
+uart_2ndstage=1
+dtoverlay=miniuart-bt
+
+[pi2]
+kernel=kernel7-rpi2.img

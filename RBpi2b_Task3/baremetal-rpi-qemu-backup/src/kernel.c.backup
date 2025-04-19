@@ -1,0 +1,24 @@
+// kernel.c
+#include "mini_uart.h"
+
+void kernel_main(void)
+{
+    // Hard-coded direct register manipulation for debugging
+    volatile unsigned int *UART0_DR = (unsigned int*)0x3F201000;
+    volatile unsigned int *UART0_FR = (unsigned int*)0x3F201018; 
+    volatile unsigned int *UART0_CR = (unsigned int*)0x3F201030;
+    
+    // Enable UART
+    *UART0_CR = 0x301;  // Enable UART, TX, RX
+    
+    // Send a character directly
+    while(*UART0_FR & (1 << 5)); // Wait until TXFF is clear
+    *UART0_DR = 'X';
+    
+    // Loop sending 'Z' every few cycles
+    while(1) {
+        for(volatile int i = 0; i < 1000000; i++);
+        while(*UART0_FR & (1 << 5));
+        *UART0_DR = 'Z';
+    }
+}
