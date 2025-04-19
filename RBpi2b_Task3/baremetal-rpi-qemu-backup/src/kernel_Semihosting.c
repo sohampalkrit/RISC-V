@@ -12,7 +12,7 @@ void kernel_main(void) {
    
     char msg1[5] ="Hell";
     char msg2[5]="o wo";
-    char msg3[5]="rld";
+    char msg3[5]="rld!";
     printf(msg1);
     printf(msg2);
     printf(msg3);

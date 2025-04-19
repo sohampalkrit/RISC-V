@@ -144,8 +144,7 @@ qemu-system-aarch64 \
 ```
 Expected Output:
 ```
-Hello from kernel!
-UART is working.
+Hello World!
 ```
 
 ---
