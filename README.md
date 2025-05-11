@@ -1,14 +1,4 @@
-## Student Details
-- **Name:** Soham Palkrit
-- **Department:** Electrical and Electronics Engineering (EEE)
-- **Roll Number:** 231EE142
-- **Contact:** 9322087306
 
-# IRIS Embedded Systems Task Portfolio
-
-This README documents three key embedded systems projects, completed as part of the IRIS task series, showcasing deep technical exploration across processor architecture, hardware-software interfacing, and bare-metal development. Each project represents a different domain of embedded systems, ranging from RISC-V processor design to custom kernel development on Raspberry Pi.
-
----
 
 ## 📘 Project 1: RISC-V Core Implementation (RV32I)
 
